@@ -1,0 +1,36 @@
+name: generate_goldens
+
+on:
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.19.2"
+          channel: "stable"
+          cache: true
+          cache-key: "flutter-:os:-:channel:-:version:-:arch:-:hash:"
+          architecture: x64
+
+      - name: Get Dependencies
+        run: flutter pub get
+
+      - name: Remove previous goldens
+        run: rm ./test/goldens/*.png
+
+      - name: Generate new goldens
+        run: flutter test --update-goldens
+
+      - name: Update goldens
+        run: |
+          echo "Updating goldens...."
+          git add ./test/
+          git commit -m "Updated goldens via Update Goldens pipeline"
+          git push

@@ -1,0 +1,52 @@
+name: build_and_test
+
+on:
+
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.13.6"
+          channel: "stable"
+          cache: true
+          cache-key: "flutter-:os:-:channel:-:version:-:arch:-:hash:"
+          architecture: x64
+
+      - name: Get Dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: dart analyze lib --no-fatal-warnings
+
+      - name: Check Formatting
+        run: dart format lib --set-exit-if-changed
+
+      - name: Run Tests
+        run: flutter test --coverage --update-goldens
+
+      - name: Check Test Coverage
+        uses: VeryGoodOpenSource/very_good_coverage@v2
+        with:
+          path: 'coverage/lcov.info'
+          min_coverage: 13.4
+          exclude: '**/*_observer.dart **/change.dart'
+
+      - name: Build appbundle
+        run: flutter clean && flutter build appbundle --release
+
+      - name: Upload appbundle
+        uses: actions/upload-artifact@v3
+        with:
+          name: appbundle
+          path: build/app/outputs/bundle/release/app-release.aab
+
+      - name: Build apk
+        run: flutter clean && flutter build apk --release
