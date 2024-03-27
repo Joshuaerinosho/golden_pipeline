@@ -36,15 +36,14 @@ jobs:
           git diff --quiet . || echo "changed=true" >> $GITHUB_OUTPUT
 
       - name: Commit
-        if: steps.verify_diff.outputs.changed == 'true'
         run: |
+          flutter test --update-goldens
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add .
           git commit -m "Updated goldens via Update Goldens pipeline" -a
 
       - name: Push
-        if: steps.verify_diff.outputs.changed == 'true'
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
