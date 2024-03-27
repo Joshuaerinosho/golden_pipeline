@@ -4,6 +4,9 @@ on:
 
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -31,14 +34,8 @@ jobs:
 
       - name: Commit new goldens
         run: |
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           echo "Updating goldens...."
-          git add ./test/
-          git commit -m "Updated goldens via Update Goldens pipeline"
-
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
+          git commit -am "Updated goldens via Update Goldens pipeline"
+          git push
