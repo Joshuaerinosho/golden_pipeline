@@ -23,7 +23,8 @@ jobs:
         run: flutter pub get
 
       - name: Remove previous goldens
-        run: rm ./test/goldens/*.png
+        run: if [ -e "./test/goldens/*.png" ]; then rm -rf "./test/goldens/*.png"; fi
+
 
       - name: Generate new goldens
         run: flutter test --update-goldens
