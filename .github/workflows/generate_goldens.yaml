@@ -32,6 +32,7 @@ jobs:
       - name: Check if there are any changes
         id: verify_diff
         run: |
+          flutter test --update-goldens
           git diff --quiet . || echo "changed=true" >> $GITHUB_OUTPUT
 
       - name: Commit
