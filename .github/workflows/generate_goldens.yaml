@@ -25,12 +25,12 @@ jobs:
       - name: Get Dependencies
         run: flutter pub get
 
-      # - name: Remove previous goldens
-      #   run: if [ -e "./test/goldens/*.png" ]; then rm -rf "./test/goldens/*.png"; fi
+      - name: Remove previous goldens
+        run: if [ -e "./test/goldens/*.png" ]; then rm -rf "./test/goldens/*.png"; fi
 
 
-      # - name: Generate new goldens
-      #   run: flutter test --update-goldens
+      - name: Generate new goldens
+        run: flutter test --update-goldens
 
       - name: Check if there are any changes
         id: verify_diff
@@ -39,36 +39,15 @@ jobs:
           git diff --quiet . || echo "changed=true" >> $GITHUB_OUTPUT
 
       - name: Commit
-        if: steps.verify_diff.outputs.changed == 'true'
         run: |
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          flutter test --update-goldens
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add .
-          git commit -m "Build" -a
+          git commit -m "Updated goldens via Update Goldens pipeline" -a
 
       - name: Push
-        if: steps.verify_diff.outputs.changed == 'true'
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.ref }}
-
-      # - name: Check if there are any changes
-      #   id: verify_diff
-      #   run: |
-      #     flutter test --update-goldens
-      #     git diff --quiet . || echo "changed=true" >> $GITHUB_OUTPUT
-
-      # - name: Commit
-      #   run: |
-      #     flutter test --update-goldens
-      #     git config --local user.email "github-actions[bot]@users.noreply.github.com"
-      #     git config --local user.name "github-actions[bot]"
-      #     git add .
-      #     git commit -m "Updated goldens via Update Goldens pipeline" -a
-
-      # - name: Push
-      #   uses: ad-m/github-push-action@master
-      #   with:
-      #     github_token: ${{ secrets.GITHUB_TOKEN }}
-      #     branch: ${{ github.ref }}
