@@ -50,6 +50,3 @@ jobs:
         if: steps.verify_diff.outputs.changed == 'true'
         run: |
           git push
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
