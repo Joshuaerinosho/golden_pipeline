@@ -3,6 +3,11 @@ name: generate_goldens
 on:
 
   workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to update golden files on'
+        required: true
+        default: 'workflow_branch_test'
 
 permissions:
   contents: write
